@@ -12,6 +12,8 @@ public class User extends Observable implements Entity {
 	private Set<User> followers;
 	private Set<User> following;
 	private int msgSent;
+	private long lastUpdateTime;
+	private long creationTime;
 	
 	public User(String name) {
 		ID = nextID;
@@ -21,12 +23,15 @@ public class User extends Observable implements Entity {
 		feed = new Stack<Message>();
 		followers = new HashSet<User>();
 		following = new HashSet<User>();
+		creationTime = System.currentTimeMillis();
+		lastUpdateTime = -1;
 	}
 	
 	public void pushMessage(Message message) {
 		feed.add(message);
 		MenuWindow.getInstance().isPositiveMessage(message.getMessage());
 		msgSent++;
+		lastUpdateTime = System.currentTimeMillis();
 		for(User e : followers) {
 			e.update(this, message);
 		}
@@ -34,6 +39,10 @@ public class User extends Observable implements Entity {
 	
 	public int getFollowingCount() {
 		return following.size();
+	}
+	
+	public long getLastUpdateTime() {
+		return lastUpdateTime;
 	}
 	
 	public int getFollowerCount() {
@@ -73,6 +82,11 @@ public class User extends Observable implements Entity {
 	
 	public int getMessageCount() {
 		return msgSent;
+	}
+	
+	@Override
+	public long getCreationTime() {
+		return creationTime;
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////

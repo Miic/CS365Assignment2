@@ -7,6 +7,7 @@ public class Group implements Entity {
 
 	private int groupID;
 	private String groupName;
+	private long creationTime;
 	
 	private Set<User> members;
 	
@@ -16,6 +17,7 @@ public class Group implements Entity {
 		this.groupName = groupName;
 		groupList.put(groupName, this);
 		members = new HashSet<User>();
+		creationTime = System.currentTimeMillis();
 	}
 	
 	public void addMember(User user) {
@@ -46,6 +48,11 @@ public class Group implements Entity {
 	public void setGroupName(String groupName) {
 		this.groupName = groupName;
 	}
+	
+	@Override
+	public long getCreationTime() {
+		return creationTime;
+	}
 
 	
 	/////////////////////////////////////////////////////
@@ -65,5 +72,8 @@ public class Group implements Entity {
 		return groupList.get(name);
 	}
 	
+	protected static Hashtable<String, Group> getGroupList() {
+		return groupList;
+	}
 	
 }

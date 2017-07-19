@@ -52,7 +52,7 @@ public class MenuWindow {
 		frmMinitwitter = new JFrame();
 		frmMinitwitter.setTitle("MiniTwitter");
 		frmMinitwitter.setResizable(false);
-		frmMinitwitter.setBounds(200, 200, 900, 600);
+		frmMinitwitter.setBounds(200, 200, 900, 625);
 		frmMinitwitter.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmMinitwitter.getContentPane().setLayout(null);
 		
@@ -97,10 +97,13 @@ public class MenuWindow {
 			   				output.append("\n  Followers: " + User.getUser(selectedNode.toString()).getFollowerCount());
 			   				output.append("\n  Following: " + User.getUser(selectedNode.toString()).getFollowingCount());
 			   				output.append("\n  Messages Sent: " + User.getUser(selectedNode.toString()).getMessageCount());
+			   				output.append("\n  Creation Time: " + User.getUser(selectedNode.toString()).getCreationTime());
+			   				output.append("\n  Last Update Time: " + User.getUser(selectedNode.toString()).getLastUpdateTime());
 			   			} else {
 			   				output.append("Type: Group\nGroupID: " + Group.getGroup(selectedNode.toString()).getID());
 			   				output.append("\n  Name: " +  Group.getGroup(selectedNode.toString()).getGroupName());
 			   				output.append("\n  Group Size: " + Group.getGroup(selectedNode.toString()).getGroupSize());
+			   				output.append("\n  Creation Time: " + Group.getGroup(selectedNode.toString()).getCreationTime());
 			   			}
 				    }
 			   		txtpnWelcomeToTwitter.setText(output.toString());
@@ -108,7 +111,7 @@ public class MenuWindow {
 			  }
 			});
 		
-		tree.setBounds(10, 13, 434, 537);
+		tree.setBounds(10, 13, 434, 573);
 		frmMinitwitter.getContentPane().add(tree);
 				
 		JButton btnNewButton = new JButton("Add User");
@@ -232,6 +235,73 @@ public class MenuWindow {
 		});
 		btnOpenUserView.setBounds(454, 73, 430, 32);
 		frmMinitwitter.getContentPane().add(btnOpenUserView);
+		
+		JButton btnIdVerification = new JButton("ID Verification");
+		btnIdVerification.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				//Due to the fact that all Users are prevented to be duplicated on creation in a HashTable. It is impossible to have a duplicate user in this system.
+				
+				Hashtable<String, User> userList = User.getUserList();
+				Enumeration<User> elements =userList.elements();
+				boolean flag = true;
+				while(elements.hasMoreElements()) {
+					if (elements.nextElement().getName().contains(" ")) {
+						flag = false;
+						break;
+					}
+				}
+				if (flag) {
+					Enumeration<Group> gElements = Group.getGroupList().elements();
+					while (gElements.hasMoreElements()) {
+						if (gElements.nextElement().getGroupName().contains(" ")) {
+							flag = false;
+							break;
+						}
+					}
+				}
+				if (flag) {
+					txtpnWelcomeToTwitter.setText("All User Names and Groups have Valid Names");
+				} else {
+					txtpnWelcomeToTwitter.setText("Invalid Name Detected!");
+				}
+			}
+		});
+		btnIdVerification.setBounds(454, 561, 200, 23);
+		frmMinitwitter.getContentPane().add(btnIdVerification);
+		
+		JButton btnFindLastUpdated = new JButton("Find Last Updated");
+		btnFindLastUpdated.setBounds(684, 561, 200, 23);
+		btnFindLastUpdated.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				//Due to the fact that all Users are prevented to be duplicated on creation in a HashTable. It is impossible to have a duplicate user in this system.
+				
+				Hashtable<String, User> userList = User.getUserList();
+				Enumeration<User> elements =userList.elements();
+				User testUser = null;
+				User currentUser = null;
+				while(elements.hasMoreElements()) {
+					if (testUser == null) {
+						currentUser = elements.nextElement();
+						if (currentUser.getLastUpdateTime() != -1) {
+							testUser = currentUser;
+						}
+					} else {
+						currentUser = elements.nextElement();
+						if (currentUser.getLastUpdateTime() != -1) {
+							if (testUser.getLastUpdateTime() > currentUser.getLastUpdateTime()) {
+								testUser = currentUser;
+							}
+						}
+					}
+				}
+				if (testUser != null) {
+					txtpnWelcomeToTwitter.setText("Latest User: " + testUser.getName() + "\n  Last Update Time: " + testUser.getLastUpdateTime() + "\n  Latest Message: " + testUser.getFeed().peek().getMessage());
+				} else {
+					txtpnWelcomeToTwitter.setText("No users have made any updates!");
+				}
+			}
+		});
+		frmMinitwitter.getContentPane().add(btnFindLastUpdated);
 	}
 	
 	protected void updateUserScreen(String name) {
