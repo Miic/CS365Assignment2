@@ -1,5 +1,5 @@
-# CS365Assignment2
+# TwitterEmulation
 
-CS 365 Project 2
+A practicing of design patterns.
 
-Purpose: Twitter Emulation 
+Uses Singleton and Observer patterns to create a TwitterEmulation with minimal code creation
